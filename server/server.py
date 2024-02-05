@@ -7,10 +7,25 @@ from bson import json_util
 from jsonschema.exceptions import ValidationError
 from bson.objectid import ObjectId
 from flask_cors import CORS
+from flask import Flask
+from flask_swagger_ui import get_swaggerui_blueprint
 import datetime
 
 app = Flask(__name__)
 CORS(app)
+
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.yaml'
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Student Result Management System API"
+    }
+)
+
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 demoDB = initDb()
 
@@ -29,6 +44,9 @@ def formatJson(data):
     parsedJson['id'] = mongoId
     return parsedJson
 
+def sendJSONErrorResponse(errorCode, errorMsg):
+   return abort(make_response(jsonify(message=errorMsg), errorCode))
+
 @app.route("/addNewStudents", methods=['POST'])
 def addNewStudents():
     student = request.json
@@ -36,19 +54,19 @@ def addNewStudents():
     try: 
        validateJSON(student, 'students')
     except ValueError:
-       abort(500, 'Internal data validation error')
+       sendJSONErrorResponse(500, 'Internal data validation error')
     except ValidationError:
-       abort(400, 'Invalid JSON format')
+       sendJSONErrorResponse(400, 'Invalid JSON format')
 
     dob = student['dob']
 
     if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', student['email']):
-       abort(400, 'Incorrect email format')
+       sendJSONErrorResponse(400, 'Incorrect email format')
 
     try:
         datetime.date.fromisoformat(dob)
     except ValueError:
-        abort(400, 'Incorrect date format for date of birth, should be YYYY-MM-DD')
+        sendJSONErrorResponse(400, 'Incorrect date format for date of birth, should be YYYY-MM-DD')
 
     # check if there's a duplicate entry in DB
     existingEntries = studentCollection.find_one({ "email": student['email'] })
@@ -56,7 +74,7 @@ def addNewStudents():
     if not existingEntries:
        studentCollection.insert_one(student)
     else:
-       abort(400, 'Student email already exists')
+       sendJSONErrorResponse(400, 'Student email already exists')
     return make_response({"status": "success"}, 200)
 
 @app.route("/removeStudent", methods=['DELETE'])
@@ -68,9 +86,9 @@ def removeStudent():
     try: 
        validateJSON(student, 'studentID')
     except ValueError:
-       abort(500, 'Internal data validation error')
+       sendJSONErrorResponse(500, 'Internal data validation error')
     except ValidationError:
-       abort(400, 'Invalid JSON format')
+       sendJSONErrorResponse(400, 'Invalid JSON format')
 
     studentID = student['studentID']
 
@@ -85,7 +103,7 @@ def removeStudent():
     if existingEntry:
        studentCollection.delete_one({"_id": ObjectId(studentID)})
     else:
-       abort(400, 'Student does not exist')
+       sendJSONErrorResponse(404, 'Student does not exist')
 
     return make_response({"status": "success"}, 200)
 
@@ -107,9 +125,9 @@ def addNewCourse():
     try: 
        validateJSON(course, collectionType)
     except ValueError:
-       abort(500, 'Internal data validation error')
+       sendJSONErrorResponse(500, 'Internal data validation error')
     except ValidationError:
-       abort(400, 'Invalid JSON format')
+       sendJSONErrorResponse(400, 'Invalid JSON format')
 
     # check if there's a duplicate entry in DB
     existingEntry = coursesCollection.find_one({ "courseName": course['courseName'] })
@@ -117,7 +135,7 @@ def addNewCourse():
     if not existingEntry:
        coursesCollection.insert_one(course)
     else:
-       abort(400, "Course {} already exists".format(course['courseName']))
+       sendJSONErrorResponse(400, "Course {} already exists".format(course['courseName']))
     return make_response({"status": "success"}, 200)
 
 @app.route("/removeCourse", methods=['DELETE'])
@@ -129,9 +147,9 @@ def removeCourse():
     try: 
        validateJSON(course, 'courseID')
     except ValueError:
-       abort(500, 'Internal data validation error')
+       sendJSONErrorResponse(500, 'Internal data validation error')
     except ValidationError:
-       abort(400, 'Invalid JSON format')
+       sendJSONErrorResponse(400, 'Invalid JSON format')
 
     courseID = course['courseID']
 
@@ -146,7 +164,7 @@ def removeCourse():
     if existingEntry:
        coursesCollection.delete_one({"_id": ObjectId(courseID)})
     else:
-       abort(400, "Course does not exist")
+       sendJSONErrorResponse(404, "Course does not exist")
     return make_response({"status": "success"}, 200)
 
 @app.route("/getCoursesList", methods=['GET'])
@@ -165,41 +183,41 @@ def addNewResult():
     resultsCollection = demoDB[collectionType]
     coursesCollection = demoDB['courses']
     studentCollection = demoDB['students']
-    
+
     try: 
        validateJSON(result, collectionType)
     except ValueError:
-       abort(500, 'Internal data validation error')
+       sendJSONErrorResponse(500, 'Internal data validation error')
     except ValidationError:
-       abort(400, 'Invalid JSON format')
+       sendJSONErrorResponse(400, 'Invalid JSON format')
     
     courseID = result['courseID']
     studentID = result['studentID']
 
     if not re.match(r'([a-f\d]{24})', courseID):
-       abort(400, 'Incorrect courseID format')
+       sendJSONErrorResponse(400, 'Incorrect courseID format')
 
     if not re.match(r'([a-f\d]{24})', result['studentID']):
-       abort(400, 'Incorrect studentID format')
+       sendJSONErrorResponse(400, 'Incorrect studentID format')
 
     if not re.match(r'([A-F])', result['result']):
-       abort(400, 'Incorrect result value')
+       sendJSONErrorResponse(400, 'Incorrect result value')
 
     # check if there's a duplicate entry in DB
     existingEntry = resultsCollection.find_one({ "courseID": courseID, "studentID": studentID })
 
     # check if student exists
     if not studentCollection.find_one({"_id": ObjectId(studentID)}):
-       abort(400, 'Student does not exist')
+       sendJSONErrorResponse(404, 'Student does not exist')
 
     # check if course exists
     if not coursesCollection.find_one({"_id": ObjectId(courseID)}):
-       abort(400, 'Course does not exist')
+       sendJSONErrorResponse(404, 'Course does not exist')
 
     if not existingEntry:
        resultsCollection.insert_one(result)
     else:
-       abort(400, 'Result already exists')
+       sendJSONErrorResponse(400, 'Result already exists')
     return make_response({"status": "success"}, 200)
 
 @app.route("/getResultList", methods=['GET'])

@@ -1,0 +1,333 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Student Result Management System API"
+paths:
+  /addNewStudents:
+    post:
+      summary: "Add new student"
+      description: "Endpoint to add new student to the system."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "student"
+          description: "Student object to be added"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              firstName:
+                type: "string"
+              lastName:
+                type: "string"
+              email:
+                type: "string"
+                format: "email"
+              dob:
+                type: "string"
+                format: "date"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          examples:
+            application/json:
+              message: Invalid JSON format
+        500:
+          description: Internal Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /removeStudent:
+    delete:
+      summary: "Remove a student"
+      description: "Endpoint to remove a student from the system."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "studentID"
+          description: "Student ID to be removed"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              studentID:
+                type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        404:
+          description: Not Found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          examples:
+            application/json:
+              message: Student does not exist
+        500:
+          description: Internal Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /getStudentsList:
+    get:
+      summary: "Get list of students"
+      description: "Endpoint to retrieve the list of students."
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Student"
+
+  /addNewCourse:
+    post:
+      summary: "Add new course"
+      description: "Endpoint to add a new course to the system."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "course"
+          description: "Course object to be added"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              courseName:
+                type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        500:
+          description: Internal Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /removeCourse:
+    delete:
+      summary: "Remove a course"
+      description: "Endpoint to remove a course from the system."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "courseID"
+          description: "Course ID to be removed"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              courseID:
+                type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        404:
+          description: Not Found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          examples:
+            application/json:
+              message: Course does not exist
+        500:
+          description: Internal Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /getCoursesList:
+    get:
+      summary: "Get list of courses"
+      description: "Endpoint to retrieve the list of courses."
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Course"
+
+  /addNewResult:
+    post:
+      summary: "Add new result"
+      description: "Endpoint to add a new result to the system."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "result"
+          description: "Result object to be added"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              courseID:
+                type: "string"
+              studentID:
+                type: "string"
+              result:
+                type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        404:
+          description: Not Found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          examples:
+            application/json:
+              message: Course does not exist
+        500:
+          description: Internal Validation Error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /getResultList:
+    get:
+      summary: "Get list of results"
+      description: "Endpoint to retrieve the list of results."
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Result"
+
+definitions:
+  Student:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      email:
+        type: "string"
+        format: "email"
+      dob:
+        type: "string"
+        format: "date"
+
+  Course:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      courseName:
+        type: "string"
+
+  Result:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      courseID:
+        type: "string"
+      studentID:
+        type: "string"
+      result:
+        type: "string"

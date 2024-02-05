@@ -43,7 +43,7 @@ function StudentList() {
   };
 
   return (
-    <div>
+    <div className="studentsList">
       <HomeButton></HomeButton>
       <div
         style={{ marginTop: "20px", marginLeft: "20px", marginRight: "20px" }}

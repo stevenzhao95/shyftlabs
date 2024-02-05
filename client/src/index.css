@@ -12,16 +12,22 @@ body {
 
 .navigation{
   position: fixed;
-  width: 300px;
+  width: 350px;
   height: 100vh;
-  z-index: -1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
-  transition: 0.5s;
+  background-color: beige;
   padding-top: 60px;
-  display: flex;
-  flex-direction: column;
+}
+
+.appName{
+ font-size: 1.8rem; 
+}
+
+.links{
+  display: block;
+  font-size: 1.5rem;
+  pad: 1rem 1.5rem;
+  padding-top: 20px;
+  text-decoration: none
 }
 
 .homeButton{

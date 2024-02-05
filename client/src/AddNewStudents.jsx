@@ -125,7 +125,7 @@ function AddNewStudents() {
   };
 
   return (
-    <div style={formStyle}>
+    <div className="addNewStudents" style={formStyle}>
       <HomeButton></HomeButton>
       <form onSubmit={handleSubmit}>
         <div>

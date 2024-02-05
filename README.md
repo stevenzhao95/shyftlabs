@@ -37,7 +37,8 @@ pip install -r requirements.txt
 ```bash
 cd ./server
 python server.py
-cd ../client
+// In a separate CMD/Terminal session
+cd ./client
 npm start
 ```
 

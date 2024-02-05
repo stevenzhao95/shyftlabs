@@ -33,7 +33,6 @@ def formatJson(data):
 def addNewStudents():
     student = request.json
     studentCollection = demoDB['students']
-    print(student)
     try: 
        validateJSON(student, 'students')
     except ValueError:
@@ -66,7 +65,6 @@ def removeStudent():
     studentCollection = demoDB['students']
     resultCollection = demoDB['results']
 
-    print(student)
     try: 
        validateJSON(student, 'studentID')
     except ValueError:
@@ -98,8 +96,6 @@ def getStudentsList():
     for student in demoDB['students'].find():
         students.append(formatJson(student))
 
-    print(students)
-
     return jsonify(students)
 
 @app.route("/addNewCourse", methods=['POST'])
@@ -107,7 +103,7 @@ def addNewCourse():
     collectionType = 'courses'
     course = request.json
     coursesCollection = demoDB[collectionType]
-    print(course)
+
     try: 
        validateJSON(course, collectionType)
     except ValueError:
@@ -130,7 +126,6 @@ def removeCourse():
     coursesCollection = demoDB['courses']
     resultCollection = demoDB['results']
 
-    print(course)
     try: 
        validateJSON(course, 'courseID')
     except ValueError:
@@ -170,7 +165,7 @@ def addNewResult():
     resultsCollection = demoDB[collectionType]
     coursesCollection = demoDB['courses']
     studentCollection = demoDB['students']
-    print(result)
+    
     try: 
        validateJSON(result, collectionType)
     except ValueError:

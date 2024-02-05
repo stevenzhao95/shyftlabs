@@ -3,6 +3,7 @@ from pymongo.errors import ConnectionFailure
 from jsonschema import validate
 
 validSchemaKeys = ['students', 'courses', 'results', 'studentID', 'courseID']
+validCollections = ['students', 'courses', 'results']
 schemasMap = {
     'students': {
         "type": "object",
@@ -50,7 +51,7 @@ schemasMap = {
 
 def validateJSON(data, schemaKey):
     if schemaKey not in validSchemaKeys:
-        raise ValueError('Collection {} is invalid'.format(schemaKey))
+        raise ValueError('Schema key {} is invalid'.format(schemaKey))
     validate(data, schemasMap[schemaKey])
 
 def initDb():
@@ -68,7 +69,7 @@ def initDb():
         demoDb = dbClient['shyftlabsDemo']
         # check collections
 
-        for collection in validSchemaKeys:
+        for collection in validCollections:
             if collection not in demoDb.list_collection_names():
                 print('Collection {} not found, creating collection'.format(collection))
                 demoDb.create_collection(collection)
@@ -78,7 +79,7 @@ def initDb():
         # create DB and collections
         print('DB not found, creating DB')
         demoDb = dbClient['shyftlabsDemo']
-        for collection in validSchemaKeys:
+        for collection in validCollections:
             print('Creating collection {}'.format(collection))
             demoDb.create_collection(collection)
     return dbClient['shyftlabsDemo']

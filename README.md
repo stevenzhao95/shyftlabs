@@ -26,15 +26,16 @@ git clone https://github.com/stevenzhao95/shyftlabs.git
 2. Install dependencies:
 
 ```bash
-cd /client
+cd ./client
 npm install
+cd ../server
+pip install -r requirements.txt
 ```
 
 3. Start the server:
 
 ```bash
-cd /server
-pip install -r requirements.txt
+cd ./server
 python server.py
 ```
 

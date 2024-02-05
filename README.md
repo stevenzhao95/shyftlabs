@@ -37,6 +37,8 @@ pip install -r requirements.txt
 ```bash
 cd ./server
 python server.py
+cd ../client
+npm start
 ```
 
 4. Open a web browser and go to `http://localhost:3000` to access the application.
